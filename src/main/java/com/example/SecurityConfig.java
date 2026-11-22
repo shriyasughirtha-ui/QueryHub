@@ -43,10 +43,11 @@ public SecurityFilterChain securityFilterChain(
         DaoAuthenticationProvider authenticationProvider,
         CorsConfigurationSource corsConfigurationSource)
         throws Exception {
-
-        http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-.csrf(csrf -> csrf.disable())
+http
+    .formLogin(form -> form.disable())
+    .httpBasic(basic -> basic.disable())
+    .cors(cors -> cors.configurationSource(corsConfigurationSource))
+    .csrf(csrf -> csrf.disable())
             .authenticationProvider(authenticationProvider)
             .sessionManagement(session -> session
     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
