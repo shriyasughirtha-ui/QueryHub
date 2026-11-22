@@ -1,5 +1,8 @@
 
 import { useEffect, useState } from "react";
+const API_BASE_URL = import.meta.env.PROD
+  ? "https://queryhub-xhvb.onrender.com"
+  : "";
 import {
   BarChart,
   Bar,
@@ -14,6 +17,9 @@ import {
   Legend,
 } from "recharts";
 import "./App.css";
+function apiFetch(url, options) {
+  return fetch(`${API_BASE_URL}${url}`, options);
+}
 
 function App() {
   const [search, setSearch] = useState("");
@@ -214,7 +220,7 @@ const [badgeError, setBadgeError] = useState("");
             password: authPassword,
           };
 
-    const response = await fetch(endpoint, {
+    const response = await apiFetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -288,7 +294,7 @@ async function saveDraft() {
 
  const isEditing = editingDraftId !== null;
 
-const response = await fetch(
+const response = await apiFetch(
   isEditing
     ? `/api/questions/drafts/${editingDraftId}?userId=${parsedUserId}`
     : `/api/questions/drafts?userId=${parsedUserId}`,
@@ -355,7 +361,7 @@ await fetchDrafts();
 
     const isEditing = editingDraftId !== null;
 
-    const response = await fetch(
+    const response = await apiFetch(
       isEditing
         ? `/api/questions/drafts/${editingDraftId}?userId=${parsedUserId}`
         : `/api/questions/drafts?userId=${parsedUserId}`,
@@ -396,7 +402,7 @@ async function fetchAnswerBookmarks() {
   setAnswerBookmarkLoading(true);
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/answer-bookmarks/user/${parsedUserId}`
     );
 
@@ -429,7 +435,7 @@ async function toggleAnswerBookmark(answerId) {
       ? `/api/answer-bookmarks?userId=${parsedUserId}&answerId=${answerId}`
       : `/api/answer-bookmarks?userId=${parsedUserId}&answerId=${answerId}`;
 
-    const response = await fetch(url, {
+    const response = await apiFetch(url, {
       method: isBookmarked ? "DELETE" : "POST",
     });
 
@@ -455,7 +461,7 @@ async function fetchDrafts() {
   setDraftsError("");
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/drafts/${parsedUserId}`
     );
 
@@ -483,7 +489,7 @@ async function fetchScheduledQuestions() {
   setDraftsError("");
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/scheduled/${parsedUserId}`
     );
 
@@ -511,7 +517,7 @@ async function fetchClosedQuestions() {
   setClosedError("");
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/closed/${parsedUserId}`
     );
 
@@ -534,7 +540,7 @@ async function fetchStatusHistory(questionId) {
   setShowStatusHistory(true);
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
      `/api/questions/status-history/${questionId}`
     );
 
@@ -562,7 +568,7 @@ async function reopenQuestion(questionId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/closed/${questionId}/reopen?userId=${parsedUserId}`,
       {
         method: "PUT",
@@ -591,7 +597,7 @@ async function cancelScheduledQuestion(questionId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/scheduled/${questionId}/cancel?userId=${parsedUserId}`,
       {
         method: "PUT",
@@ -619,7 +625,7 @@ async function checkDraftRecovery() {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/drafts/${parsedUserId}`
     );
 
@@ -650,7 +656,7 @@ async function publishDraft(draftId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/drafts/${draftId}/publish?userId=${parsedUserId}`,
       {
         method: "PUT",
@@ -678,7 +684,7 @@ async function scheduleDraft(draftId, scheduledAt) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/drafts/${draftId}/schedule?userId=${parsedUserId}&scheduledAt=${encodeURIComponent(scheduledAt)}`,
       {
         method: "PUT",
@@ -706,7 +712,7 @@ async function deleteDraft(draftId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/drafts/${draftId}?userId=${parsedUserId}`,
       {
         method: "DELETE",
@@ -738,7 +744,7 @@ function editDraft(draft) {
     setError("");
 
     try {
-      const response = await fetch("/api/questions");
+      const response = await apiFetch("/api/questions");
 
       if (!response.ok) {
         throw new Error(`Request failed: ${response.status}`);
@@ -782,7 +788,7 @@ if (sharedQuestion) {
   setAdminReportError("");
 
   try {
-    const response = await fetch("/api/admin/reports/dashboard");
+    const response = await apiFetch("/api/admin/reports/dashboard");
 
     if (!response.ok) {
       throw new Error("Could not load admin report statistics.");
@@ -806,7 +812,7 @@ async function fetchAdminReports() {
         ? "/api/admin/reports"
         : `/api/admin/reports/status?status=${adminReportFilter}`;
 
-    const response = await fetch(url);
+    const response = await apiFetch(url);
 
     if (!response.ok) {
       throw new Error("Could not load reports.");
@@ -822,7 +828,7 @@ async function fetchAdminReports() {
 }
 async function updateReportStatus(reportId, status) {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/admin/reports/${reportId}/status?status=${status}`,
       {
         method: "PUT",
@@ -848,7 +854,7 @@ async function deleteAdminReport(reportId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/admin/reports/${reportId}`,
       {
         method: "DELETE",
@@ -881,7 +887,7 @@ async function fetchAdminUsers() {
       url = `/api/admin/users/role?role=${adminUserFilter}`;
     }
 
-    const response = await fetch(url);
+    const response = await apiFetch(url);
 
     if (!response.ok) {
       throw new Error("Could not load users.");
@@ -902,9 +908,9 @@ async function fetchAdminAnalytics() {
   try {
     const [dashboardResponse, activityResponse, reputationResponse] =
       await Promise.all([
-        fetch("/api/admin/dashboard"),
-        fetch("/api/admin/users/activity-dashboard"),
-        fetch("/api/admin/users/reputation-statistics"),
+        apiFetch("/api/admin/dashboard"),
+        apiFetch("/api/admin/users/activity-dashboard"),
+        apiFetch("/api/admin/users/reputation-statistics"),
       ]);
 
     if (
@@ -956,7 +962,7 @@ async function fetchAdminActivityLogs() {
       endpoint = `/api/admin/activity-logs/by-action?action=${encodeURIComponent(adminActivityFilter)}`;
     }
 
-    const response = await fetch(endpoint);
+    const response = await apiFetch(endpoint);
 
     if (!response.ok) {
       throw new Error("Could not load activity logs.");
@@ -1026,7 +1032,7 @@ function exportAdminActivityLogs() {
 }
 async function updateAdminUserStatus(userId, active) {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/admin/users/${userId}/active?active=${active}`,
       {
         method: "PUT",
@@ -1043,7 +1049,7 @@ async function updateAdminUserStatus(userId, active) {
   }
 }async function updateAdminUserRole(userId, role) {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/admin/users/${userId}/role?role=${role}`,
       {
         method: "PUT",
@@ -1079,7 +1085,7 @@ async function updateAdminUserStatus(userId, active) {
   setReportSuccess("");
 
   try {
-    const response = await fetch("/api/reports", {
+    const response = await apiFetch("/api/reports", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1116,7 +1122,7 @@ const data = JSON.parse(responseText);
 }
     async function fetchTrendingQuestions() {
     try {
-      const response = await fetch("/api/questions/trending");
+      const response = await apiFetch("/api/questions/trending");
 
       if (!response.ok) {
         throw new Error("Could not load trending questions.");
@@ -1362,7 +1368,7 @@ useEffect(() => {
       }
 
       try {
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/notifications/user/${currentUserId}/unread-count`
         );
 
@@ -1445,7 +1451,7 @@ async function fetchFollowedQuestions() {
   setFollowError("");
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/question-follows/user/${currentUserId}`
     );
 
@@ -1463,7 +1469,7 @@ async function fetchFollowedQuestions() {
 }
 async function fetchFollowerCount(questionId) {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/question-follows/count/${questionId}`
     );
 
@@ -1500,7 +1506,7 @@ async function toggleQuestionFollow(questionId) {
   setFollowError("");
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/question-follows/${questionId}?userId=${currentUserId}`,
       {
         method: isFollowing ? "DELETE" : "POST",
@@ -1524,7 +1530,7 @@ async function toggleQuestionFollow(questionId) {
   setLeaderboardError("");
 
   try {
-    const response = await fetch("/api/leaderboard");
+    const response = await apiFetch("/api/leaderboard");
 
     if (!response.ok) {
       throw new Error("Could not load leaderboard.");
@@ -1550,7 +1556,7 @@ async function increaseQuestionViews(questionId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/${questionId}?userId=${userId}`
     );
 
@@ -1587,8 +1593,8 @@ async function increaseQuestionViews(questionId) {
 
     try {
       const [notificationsResponse, countResponse] = await Promise.all([
-        fetch(`/api/notifications/user/${currentUserId}`),
-        fetch(`/api/notifications/user/${currentUserId}/unread-count`),
+        apiFetch(`/api/notifications/user/${currentUserId}`),
+        apiFetch(`/api/notifications/user/${currentUserId}/unread-count`),
       ]);
 
       if (!notificationsResponse.ok) {
@@ -1632,7 +1638,7 @@ async function increaseQuestionViews(questionId) {
   setBookmarkError("");
 
   try {
-    const response = await fetch(`/api/bookmarks/user/${userId}`);
+    const response = await apiFetch(`/api/bookmarks/user/${userId}`);
     console.log("Bookmark fetch status:", response.status, "User ID:", userId);
 
     if (!response.ok) {
@@ -1663,7 +1669,7 @@ return data;
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/notifications/${notificationId}?userId=${currentUserId}`,
         { method: "DELETE" }
       );
@@ -1694,7 +1700,7 @@ return data;
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/notifications/${notificationId}/read?userId=${currentUserId}`,
         { method: "PUT" }
       );
@@ -1732,7 +1738,7 @@ return data;
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/notifications/user/${currentUserId}/all`,
         { method: "DELETE" }
       );
@@ -1763,7 +1769,7 @@ return data;
     }
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/notifications/user/${currentUserId}/read-all`,
         { method: "PUT" }
       );
@@ -1805,9 +1811,9 @@ return data;
     try {
       const [profileResponse, questionsResponse, answersResponse] =
         await Promise.all([
-          fetch(`/api/users/${currentUserId}`),
-          fetch(`/api/questions/user/${currentUserId}`),
-          fetch(`/api/answers/user/${currentUserId}`),
+          apiFetch(`/api/users/${currentUserId}`),
+          apiFetch(`/api/questions/user/${currentUserId}`),
+          apiFetch(`/api/answers/user/${currentUserId}`),
         ]);
 
       if (!profileResponse.ok) {
@@ -1860,7 +1866,7 @@ return data;
   setBadgeError("");
 
   try {
-    const response = await fetch(`/api/badges/user/${userId}`);
+    const response = await apiFetch(`/api/badges/user/${userId}`);
 
     if (!response.ok) {
       throw new Error("Failed to load badges");
@@ -1896,7 +1902,7 @@ const isBookmarked = latestBookmarks.some(
   try {
     const url = `/api/bookmarks?userId=${userId}&questionId=${questionId}`;
 
-    const response = await fetch(url, {
+    const response = await apiFetch(url, {
       method: isBookmarked ? "DELETE" : "POST",
     });
 
@@ -1926,7 +1932,7 @@ const isBookmarked = latestBookmarks.some(
     }));
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/answers/question/${questionId}`
       );
 
@@ -1964,7 +1970,7 @@ const isBookmarked = latestBookmarks.some(
   }));
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments/answer/${answerId}`
     );
 
@@ -1998,7 +2004,7 @@ async function fetchQuestionComments(questionId) {
   }));
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments/question/${questionId}`
     );
 
@@ -2053,7 +2059,7 @@ async function addQuestionComment(questionId) {
       questionId: String(questionId),
     });
 
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments?${params.toString()}`,
       {
         method: "POST",
@@ -2112,7 +2118,7 @@ setQuestionCommentErrors((previous) => ({
       content: editedQuestionCommentContent.trim(),
     });
 
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments/${commentId}?${params.toString()}`,
       {
         method: "PUT",
@@ -2154,7 +2160,7 @@ async function deleteQuestionComment(questionId, commentId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments/${commentId}?userId=${loggedInUser.id}`,
       {
         method: "DELETE",
@@ -2201,7 +2207,7 @@ async function addComment(answerId) {
       answerId: String(answerId),
     });
 
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments?${params.toString()}`,
       {
         method: "POST",
@@ -2255,7 +2261,7 @@ async function updateAnswerComment(answerId, commentId) {
       content: editedCommentContent.trim(),
     });
 
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments/${commentId}?${params.toString()}`,
       {
         method: "PUT",
@@ -2297,7 +2303,7 @@ async function deleteAnswerComment(answerId, commentId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/comments/${commentId}?userId=${loggedInUser.id}`,
       {
         method: "DELETE",
@@ -2385,7 +2391,7 @@ async function addAnswer(event, questionId) {
         content,
       });
 
-      const response = await fetch(`/api/answers?${params.toString()}`, {
+      const response = await apiFetch(`/api/answers?${params.toString()}`, {
         method: "POST",
       });
 
@@ -2454,7 +2460,7 @@ const currentUserId = Number(loggedInUser.id);
     try {
       const endpoint = voteType === "UP" ? "upvote" : "downvote";
 
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/answers/${answerId}/${endpoint}?userId=${currentUserId}`,
         { method: "PUT" }
       );
@@ -2505,7 +2511,7 @@ const currentUserId = Number(loggedInUser.id);
     }));
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/answers/${answerId}/accept?userId=${currentUserId}`,
         { method: "PUT" }
       );
@@ -2544,7 +2550,7 @@ const currentUserId = Number(loggedInUser.id);
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/answers/${answerId}?userId=${loggedInUser.id}`,
       { method: "DELETE" }
     );
@@ -2574,7 +2580,7 @@ async function togglePinAnswer(answerId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/answers/${answerId}/pin?userId=${parsedUserId}`,
       {
         method: "PUT",
@@ -2609,7 +2615,7 @@ async function updateAnswer(questionId, answerId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/answers/${answerId}?userId=${loggedInUser.id}`,
       {
         method: "PUT",
@@ -2645,7 +2651,7 @@ async function fetchAnswerEditHistory(answerId) {
   setShowAnswerEditHistory(true);
 
 try {
-  const answerResponse = await fetch(`/api/answers/${answerId}`);
+  const answerResponse = await apiFetch(`/api/answers/${answerId}`);
 
   if (!answerResponse.ok) {
     throw new Error("Could not load current answer.");
@@ -2658,7 +2664,7 @@ try {
 }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/answers/edit-history/${answerId}`
     );
 
@@ -2692,7 +2698,7 @@ async function restoreAnswerVersion(answerId, historyId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/answers/${answerId}/restore/${historyId}?userId=${parsedUserId}`,
       {
         method: "PUT",
@@ -2745,7 +2751,7 @@ async function updateQuestion(questionId, tags) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/${questionId}?userId=${loggedInUser.id}`,
       {
         method: "PUT",
@@ -2794,7 +2800,7 @@ async function deleteQuestion(questionId) {
   }
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/${questionId}?userId=${loggedInUser.id}`,
       {
         method: "DELETE",
@@ -2820,7 +2826,7 @@ async function fetchQuestionEditHistory(questionId) {
   setEditHistory([]);
 
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `/api/questions/${questionId}/edit-history`
     );
 
@@ -2871,7 +2877,7 @@ async function fetchQuestionEditHistory(questionId) {
   expiresAt: expiryDate ? expiryDate : null,
 };
 
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/questions?userId=${parsedUserId}`,
         {
           method: "POST",
@@ -2889,7 +2895,7 @@ async function fetchQuestionEditHistory(questionId) {
         );
       }
 try {
-  const draftsResponse = await fetch(
+  const draftsResponse = await apiFetch(
     `/api/questions/drafts/${parsedUserId}`
   );
 
@@ -2906,7 +2912,7 @@ try {
     const draftIdToDelete = editingDraftId || matchingDraft?.id;
 
     if (draftIdToDelete) {
-      await fetch(
+      await apiFetch(
         `/api/questions/drafts/${draftIdToDelete}?userId=${parsedUserId}`,
         {
           method: "DELETE",
@@ -3501,7 +3507,7 @@ try {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/questions/${history.question.id}/restore/${history.id}`,
         {
           method: "PUT",
