@@ -203,10 +203,10 @@ const [badgeError, setBadgeError] = useState("");
   setAuthLoading(true);
 
   try {
-    const endpoint =
-      authMode === "login"
-        ? "/api/users/login"
-        : "/api/users/register";
+   const endpoint =
+  authMode === "login"
+    ? "/users/login"
+    : "/users/register";
 
     const requestBody =
       authMode === "login"
