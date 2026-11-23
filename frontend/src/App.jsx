@@ -18,7 +18,11 @@ import {
 } from "recharts";
 import "./App.css";
 function apiFetch(url, options) {
-  return fetch(`${API_BASE_URL}${url}`, options);
+  const correctedUrl = url.startsWith("/api/")
+    ? url.substring(4)
+    : url;
+
+  return fetch(`${API_BASE_URL}${correctedUrl}`, options);
 }
 
 function App() {
