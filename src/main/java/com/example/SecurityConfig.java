@@ -37,7 +37,7 @@ public AuthenticationManager authenticationManager(
 
         return provider;
     }
-
+@Bean
 public SecurityFilterChain securityFilterChain(
         HttpSecurity http,
         DaoAuthenticationProvider authenticationProvider,
